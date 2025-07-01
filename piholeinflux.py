@@ -12,7 +12,7 @@ import requests
 import tomli
 from influxdb_client import InfluxDBClient
 from influxdb_client.client import write_api
-from pydantic import AnyHttpUrl, validator
+from pydantic import AnyHttpUrl, field_validator
 from pydantic_settings import BaseSettings
 
 logger = logging.getLogger("piholeinflux")
@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     class Config:
         env_prefix = "pihole_"
 
-    @field_validator("log_level", pre=True)
+    @field_validator("log_level", mode="before")
     def log_level_uppercase(cls, value: str) -> str:
         return value.upper()
 
