@@ -71,7 +71,7 @@ class Settings(BaseSettings):
 
     @classmethod
     def from_toml(cls, path: Path) -> Settings:
-        return cls.parse_obj(tomli.loads(path.read_text()))
+        return cls.model_validate(tomli.loads(path.read_text()))
 
     @classmethod
     def load_user_conf(cls) -> Settings:

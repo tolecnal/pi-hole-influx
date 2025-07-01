@@ -1,4 +1,4 @@
-influxdb-client>=1.36.0,<2.0
+influxdb-client>=1.40.0
 pydantic>=1.10.4<2.0
 pydantic-settings
 requests>=2.24.0,<3.0
