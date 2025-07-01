@@ -12,13 +12,17 @@ import requests
 import tomli
 from influxdb_client import InfluxDBClient
 from influxdb_client.client import write_api
-from pydantic import AnyHttpUrl, field_validator
+from pydantic import AnyHttpUrl, field_validator, ConfigDict
 from pydantic_settings import BaseSettings
 
 logger = logging.getLogger("piholeinflux")
 
 
 class InstanceSettings(BaseSettings):
+    model_config = ConfigDict(
+        env_prefix="PIHOLE_"
+    )
+    
     name: str = "pihole"
     base_url: AnyHttpUrl = "http://127.0.0.1"
     api_token: str = ""
@@ -48,6 +52,10 @@ class InstanceSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
+    model_config = ConfigDict(
+        env_prefix="pihole_"
+    )
+    
     log_level: Literal["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL"] = "INFO"
 
     influxdb_url: AnyHttpUrl = "http://127.0.0.1:8086"
@@ -61,9 +69,6 @@ class Settings(BaseSettings):
     reporting_interval: int = 30
 
     instances: list[InstanceSettings] = [InstanceSettings()]
-
-    class Config:
-        env_prefix = "pihole_"
 
     @field_validator("log_level", mode="before")
     def log_level_uppercase(cls, value: str) -> str:
@@ -163,24 +168,24 @@ class Daemon:
         logger.info(
             "Launching daemon to report to InfluxDB '%s'", settings.influxdb_url
         )
-        influx = InfluxDBClient(
+        with InfluxDBClient(
             url=settings.influxdb_url,
             org=settings.influxdb_org,
             token=settings.influxdb_token,
             verify_ssl=settings.influxdb_verify_ssl,
-        )
-        write_options = write_api.WriteOptions(
-            batch_size=len(settings.instances) * 2,
-            flush_interval=60_000,  # milliseconds
-        )
-        self.influx_api = influx.write_api(write_options=write_options)
-        self.influx_bucket = settings.influxdb_bucket
-        self.single_run = single_run
-        self.piholes = [
-            Pihole.from_settings(instance_settings=inst, global_settings=settings)
-            for inst in settings.instances
-        ]
-        self.reporting_interval = settings.reporting_interval
+        ) as client:
+	        write_options = write_api.WriteOptions(
+        	    batch_size=len(settings.instances) * 2,
+            	flush_interval=60_000,  # milliseconds
+        	)
+        	self.influx_api = influx.write_api(write_options=write_options)
+        	self.influx_bucket = settings.influxdb_bucket
+        	self.single_run = single_run
+        	self.piholes = [
+            	Pihole.from_settings(instance_settings=inst, global_settings=settings)
+            	for inst in settings.instances
+        	]
+        	self.reporting_interval = settings.reporting_interval
 
     def run(self) -> None:
         while True:
