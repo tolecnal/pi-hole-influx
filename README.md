@@ -9,6 +9,8 @@
 
 A simple daemonized script to report Pi-Hole stats to an InfluxDB v2 instance, ready to be displayed via Grafana.
 
+⚠️ THIS IS A TEST VERSION TO TEST COMPABILITY WITH PIHOLE 6.x ⚠️
+
 **⚠️ The docker image name has been changed to `ghcr.io/janw/pi-hole-influx`. Please update your deployment accordingly. If you are still using InfluxDB v1, please use [version 1.0](https://github.com/janw/pi-hole-influx/releases/tag/v1.0.0) (`ghcr.io/janw/pi-hole-influx:v1`) of Pi-hole-Influx. Newer versions (tagged `:v2` and `:latest`) only support InfluxDB v2. ⚠️**
 
 ![Example Grafana Dashboard](.readme-assets/dashboard.png)
