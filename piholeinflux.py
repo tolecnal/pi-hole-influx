@@ -12,7 +12,8 @@ import requests
 import tomli
 from influxdb_client import InfluxDBClient
 from influxdb_client.client import write_api
-from pydantic import AnyHttpUrl, BaseSettings, validator
+from pydantic import AnyHttpUrl, validator
+from pydantic_settings import BaseSettings
 
 logger = logging.getLogger("piholeinflux")
 
