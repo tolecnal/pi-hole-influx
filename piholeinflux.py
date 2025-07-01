@@ -25,13 +25,13 @@ class InstanceSettings(BaseSettings):
     @validator("base_url")
     def base_url_must_not_contain_api_path(cls, value: AnyHttpUrl) -> AnyHttpUrl:
         path = value.path
-        if path and "admin/api.php" in path:
+        if path and "api.php" in path:
             raise ValueError("Must not contain the API path of the Pi-hole instance")
         return value
 
     def get_full_url(self) -> str:
         url = self.base_url
-        url.path = (url.path.rstrip("/") if url.path else "") + "/admin/api.php"
+        url.path = (url.path.rstrip("/") if url.path else "") + "/api.php"
         url.query = "summaryRaw"
 
         return AnyHttpUrl.build(
