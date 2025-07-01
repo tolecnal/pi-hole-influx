@@ -23,7 +23,7 @@ class InstanceSettings(BaseSettings):
     base_url: AnyHttpUrl = "http://127.0.0.1"
     api_token: str = ""
 
-    @validator("base_url")
+    @field_validator("base_url")
     def base_url_must_not_contain_api_path(cls, value: AnyHttpUrl) -> AnyHttpUrl:
         path = value.path
         if path and "api.php" in path:
@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     class Config:
         env_prefix = "pihole_"
 
-    @validator("log_level", pre=True)
+    @field_validator("log_level", pre=True)
     def log_level_uppercase(cls, value: str) -> str:
         return value.upper()
 
